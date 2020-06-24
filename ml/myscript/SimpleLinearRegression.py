@@ -5,6 +5,7 @@
 # @File    : SimpleLinearRegression.py
 # @Software: PyCharm
 import numpy as np
+from .metrics import r2_score
 
 class SimpleLinearRegression2():
     """向量化"""
@@ -28,6 +29,10 @@ class SimpleLinearRegression2():
     def _predict(self, x_single):
         return self.a_*x_single +self.b_
 
+    def score(self, X_test, y_test):
+        """根据测试数据, 确定当前模型的准确度"""
+        y_predict = self.predict(X_test)
+        return r2_score(y_test, y_predict)
     def __repr__(self):
         return "SimpleLinearRegression2()"
 class SimpleLinearRegression1():
@@ -55,6 +60,11 @@ class SimpleLinearRegression1():
 
     def _predict(self, x_single):
         return self.a_*x_single +self.b_
+
+    def score(self, X_test, y_test):
+        """根据测试数据, 确定当前模型的准确度"""
+        y_predict = self.predict(X_test)
+        return r2_score(y_test, y_predict)
 
     def __repr__(self):
         return "SimpleLinearRegression1()"

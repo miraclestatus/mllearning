@@ -29,12 +29,14 @@ class LinearRegression():
             except:
                 return float('inf')
 
+        # def dJ(theta, X_b, y):
+        #     res = np.empty(len(theta))
+        #     res[0] = np.sum(X_b.dot(theta) - y)
+        #     for i in range(1, len(theta)):
+        #         res[i] = (X_b.dot(theta) - y).dot(X_b[:, i])
+        #     return res * 2 / len(X_b)
         def dJ(theta, X_b, y):
-            res = np.empty(len(theta))
-            res[0] = np.sum(X_b.dot(theta) - y)
-            for i in range(1, len(theta)):
-                res[i] = (X_b.dot(theta) - y).dot(X_b[:, i])
-            return res * 2 / len(X_b)
+            return X_b.T.dot(X_b.dot(theta) - y) * 2. / len(X_b)
 
         def gradient_descent(X_b, y, initial_theta, eta, n_iters=1e4, epsilon=1e-8):
 
@@ -59,6 +61,36 @@ class LinearRegression():
         self.intercept_ = self._theta[0]
         self.coef_ = self._theta[1:]
 
+        return self
+
+    def fit_sgd(self, X_train, y_train, n_iters=1e4, t0=5, t1=50):
+        def dJ_sgd(theta, X_b_i, y_i):
+            return 2. * X_b_i.T.dot(X_b_i.dot(theta) - y_i)
+
+        def sgd(X_b, y, initial_theta, n_iters):
+
+            def learning_rate(t):
+                return t0 / (t + t1)
+
+            theta = initial_theta
+            m = len(X_b)
+            for cur_iter in range(n_iters):
+                # rand_i = np.random.randint(len(X_b))
+                indexes = np.random.permutation(m)
+                # 保证随机性
+                X_b_new = X_b[indexes]
+                y_new = y[indexes]
+                for i in range(m):
+                    gradient = dJ_sgd(theta, X_b_new[i], y_new[i])
+                    theta = theta - learning_rate(cur_iter*m + i) * gradient
+
+            return theta
+
+        X_b = np.hstack([np.ones((len(X_train), 1)), X_train])
+        initial_theta = np.random.randn(X_b.shape[1])
+        self._theta= sgd(X_b, y_train, initial_theta, n_iters, t0, t1)
+        self.coef_ = self._theta[1:]
+        self.intercept_ = self._theta[0]
         return self
     def predict(self, X_predict):
         X_b = np.hstack([np.ones((len(X_predict), 1)), X_predict])

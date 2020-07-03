@@ -74,7 +74,9 @@ class LinearRegression():
 
             theta = initial_theta
             m = len(X_b)
+            # n_iters 代表对样本看了多少遍
             for cur_iter in range(n_iters):
+            # for cur_iter in range(n_iters*m):
                 # rand_i = np.random.randint(len(X_b))
                 indexes = np.random.permutation(m)
                 # 保证随机性
